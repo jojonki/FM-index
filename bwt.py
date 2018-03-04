@@ -66,7 +66,6 @@ class BWT2:
         sorted_idx = sorted(range(text_len), key=lambda k: circ_mat[k])
         self.bwt = [circ_mat[idx][-1] for idx in sorted_idx]
         # print(self.bwt)
-        # self.org_idx = sorted_idx.index(0)
 
     def decode(self):
         assert self.bwt is not None
