@@ -15,13 +15,7 @@ class BWT1:
         sorted_idx = sorted(range(text_len), key=lambda k: circ_mat[k])
         self.bwt = [circ_mat[idx][-1] for idx in sorted_idx]
         self.org_idx = sorted_idx.index(0)
-
-        # print('circulant_mat', circ_mat)
-        # print('sorted circulant_mat', sorted(circ_mat))
-        # print('sorted_idx', sorted_idx)
-        # print('bwt', self.bwt)
         self.sort_index_map = sorted(range(text_len), key=lambda k: self.bwt[k])
-        # print('original index', org_idx)
 
     def _fixed_sort(self, d):
         '''
@@ -88,6 +82,7 @@ class BWT2:
             idx = L.index(F[idx])
         return ret_text
 
+
 class BWT3:
     # ref https://www.cs.jhu.edu/~langmea/resources/lecture_notes/bwt_and_fm_index.pdf
     def __init__(self, text=None):
@@ -97,8 +92,10 @@ class BWT3:
             # self.encode(self.text)
             sa = self.suffix_array(self.text)
             print('sa', sa)
-            bwt = self.bwt_via_sa(self.text, sa)
-            print('bwt', bwt)
+            bw = self.bwt_via_sa(self.text, sa)
+            print('bwt', bw)
+            rt = self.reverse_bwt(bw)
+            print('rt', rt)
 
     def suffix_array(self, t):
         sfxes = [t[i:] for i in range(len(t))]
@@ -114,5 +111,40 @@ class BWT3:
         self.bwt = bwt
         return self.bwt
 
-b = BWT3('abaaba')
+    def rank_bwt(self, bw):
+        tots = {}
+        ranks = []
+        for c in bw:
+            if c not in tots:
+                tots[c] = 0
+            ranks.append(tots[c])
+            tots[c] += 1
+        return ranks, tots
 
+    def firstCol(self, tots):
+        first = {}
+        totc = 0
+        for c, count in sorted(tots.items()):
+            first[c] = (totc, totc + count)
+            totc += count
+        return first
+
+    def reverse_bwt(self, bw):
+        ranks, tots = self.rank_bwt(bw)
+        print('ranks', ranks)
+        print('tots', tots)
+        first = self.firstCol(tots)
+        print('first', first)
+        t = self.marker
+        row_i = 0
+        while bw[row_i] != self.marker:
+            c = bw[row_i]
+            t = c + t
+            row_i = first[c][0] + ranks[row_i]
+
+        if t[-1] == self.marker:
+            t = t[:-1]
+        return t
+
+
+b = BWT3('abaaba')
