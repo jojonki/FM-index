@@ -85,17 +85,32 @@ class BWT2:
 
 class BWT3:
     # ref https://www.cs.jhu.edu/~langmea/resources/lecture_notes/bwt_and_fm_index.pdf
-    def __init__(self, text=None):
+    def __init__(self):
         self.marker = '$'
-        if text:
-            self.text = text + self.marker
-            # self.encode(self.text)
-            sa = self.suffix_array(self.text)
-            print('sa', sa)
-            bw = self.bwt_via_sa(self.text, sa)
-            print('bwt', bw)
-            rt = self.reverse_bwt(bw)
-            print('rt', rt)
+
+    def encode(self, text):
+        # self.encode(self.text)
+        sa = self.suffix_array(text)
+        print('sa', sa)
+        self.bwt = self.bwt_via_sa(text, sa)
+        return self.bwt
+        
+    def decode(self, bwt):
+        ranks, tots = self.rank_bwt(bwt)
+        print('ranks', ranks)
+        print('tots', tots)
+        first = self.firstCol(tots)
+        print('first', first)
+        t = self.marker
+        row_i = 0
+        while bwt[row_i] != self.marker:
+            c = bwt[row_i]
+            t = c + t
+            row_i = first[c][0] + ranks[row_i]
+
+        if t[-1] == self.marker:
+            t = t[:-1]
+        return t
 
     def suffix_array(self, t):
         sfxes = [t[i:] for i in range(len(t))]
@@ -128,23 +143,3 @@ class BWT3:
             first[c] = (totc, totc + count)
             totc += count
         return first
-
-    def reverse_bwt(self, bw):
-        ranks, tots = self.rank_bwt(bw)
-        print('ranks', ranks)
-        print('tots', tots)
-        first = self.firstCol(tots)
-        print('first', first)
-        t = self.marker
-        row_i = 0
-        while bw[row_i] != self.marker:
-            c = bw[row_i]
-            t = c + t
-            row_i = first[c][0] + ranks[row_i]
-
-        if t[-1] == self.marker:
-            t = t[:-1]
-        return t
-
-
-b = BWT3('abaaba')
