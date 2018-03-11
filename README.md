@@ -1,4 +1,4 @@
-# BWT
+# FM-index
 The Burrows–Wheeler transform (also called block-sorting compression) 
 
 ## How to Use
