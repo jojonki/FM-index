@@ -89,16 +89,22 @@ class BWT3:
         self.marker = '$'
 
     def encode(self, text):
+        if text[-1] != self.marker:
+            text += self.marker
+            self.text = text
+
         # self.encode(self.text)
         sa = self.suffix_array(text)
+        self.sa = sa # TODO reduce memory footprint
         print('sa', sa)
         self.bwt = self.bwt_via_sa(text, sa)
         return self.bwt
-        
+
     def decode(self, bwt):
         ranks, ch_count = self.rank_bwt(bwt)
         print('ranks', ranks)
         print('ch_count', ch_count)
+        self.ch_count = ch_count
         first = self.first_col(ch_count)
         print('first', first)
         t = self.marker
@@ -143,3 +149,41 @@ class BWT3:
             first[c] = (offset, offset + count)
             offset += count
         return first
+
+    def rank(self, c, k):
+        return self.bwt[:k].count(c)
+
+    def rank_lt(self, c):
+        # TODO impl better way
+        F = self.first_col(self.ch_count)
+        assert c in F # TODO error handle
+        return F[c][0]
+
+    def search(self, pat):
+        assert self.bwt is not None
+        assert self.ch_count is not None
+        assert self.sa is not None
+
+        F = self.first_col(self.ch_count)
+        L = self.bwt
+        begin = 0
+        end = len(self.bwt)
+        for c in pat[::-1]:
+            begin = self.rank_lt(c) + self.rank(c, begin)
+            end   = self.rank_lt(c) + self.rank(c, end)
+            if begin >= end: # no results
+                begin, end = None, None
+                break
+        print('[bwt] (begin, end)', begin, end)
+        match = []
+        if begin is not None and end is not None:
+            for i in range(begin, end):
+                print(self.sa[i], self.sa[i] + len(pat))
+                match.append((self.sa[i], self.sa[i] + len(pat)))
+            # mat_range = [self.sa[begin], self.sa[end - 1]] # TODO reduce foot memory
+            # if mat_range[0] > mat_range[1]: # swap check
+            #     tmp = mat_range[0]
+            #     mat_range[0] = mat_range[1]
+            #     mat_range[1] = tmp
+            # return tuple(mat_range)
+        return match
