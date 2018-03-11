@@ -87,3 +87,32 @@ class BWT2:
             ret_text += F[idx][0]
             idx = L.index(F[idx])
         return ret_text
+
+class BWT3:
+    # ref https://www.cs.jhu.edu/~langmea/resources/lecture_notes/bwt_and_fm_index.pdf
+    def __init__(self, text=None):
+        self.marker = '$'
+        if text:
+            self.text = text + self.marker
+            # self.encode(self.text)
+            sa = self.suffix_array(self.text)
+            print('sa', sa)
+            bwt = self.bwt_via_sa(self.text, sa)
+            print('bwt', bwt)
+
+    def suffix_array(self, t):
+        sfxes = [t[i:] for i in range(len(t))]
+        return [i[0] for i in sorted(enumerate(sfxes), key=lambda x:x[1])]
+
+    def bwt_via_sa(self, t, sa):
+        bwt = []
+        for si in sa:
+            if si == 0:
+                bwt += self.marker
+            else:
+                bwt += t[si - 1]
+        self.bwt = bwt
+        return self.bwt
+
+b = BWT3('abaaba')
+
