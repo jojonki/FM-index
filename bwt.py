@@ -96,10 +96,10 @@ class BWT3:
         return self.bwt
         
     def decode(self, bwt):
-        ranks, tots = self.rank_bwt(bwt)
+        ranks, ch_count = self.rank_bwt(bwt)
         print('ranks', ranks)
-        print('tots', tots)
-        first = self.firstCol(tots)
+        print('ch_count', ch_count)
+        first = self.first_col(ch_count)
         print('first', first)
         t = self.marker
         row_i = 0
@@ -127,19 +127,19 @@ class BWT3:
         return self.bwt
 
     def rank_bwt(self, bw):
-        tots = {}
+        ch_count = {}
         ranks = []
         for c in bw:
-            if c not in tots:
-                tots[c] = 0
-            ranks.append(tots[c])
-            tots[c] += 1
-        return ranks, tots
+            if c not in ch_count:
+                ch_count[c] = 0
+            ranks.append(ch_count[c])
+            ch_count[c] += 1
+        return ranks, ch_count
 
-    def firstCol(self, tots):
+    def first_col(self, ch_count):
         first = {}
-        totc = 0
-        for c, count in sorted(tots.items()):
-            first[c] = (totc, totc + count)
-            totc += count
+        offset = 0
+        for c, count in sorted(ch_count.items()):
+            first[c] = (offset, offset + count)
+            offset += count
         return first
