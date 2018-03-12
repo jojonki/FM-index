@@ -3,13 +3,10 @@ The Burrows–Wheeler transform (also called block-sorting compression)
 
 ## How to Use
 ```
-$ python main.py
-Input: cacao
-BWT1-----
-bwt: ccoaa
-Decoded: cacao
-BWT2-----
-bwt: occ$aa
-Decoded: cacao$
+Directory Search base
+$ python main.py --f alice_simple.txt --s Alice
+
+File base
+$ python main.py --dir books/芥川龍之介 --s 日本の
 ```
 

@@ -6,18 +6,15 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        <p class="lead">
-          {% if name %}
-            こんにちは {{ name }} さん
-          {% else %}
-            {{ message }}
-          {% endif %}
-        </p>
-        <form action="/post" method="post" class="form-inline">
-          <label for="name">名前</label>
-          <input type="text" class="form-control" id="name" name="name" placeholder="Name">
-          <button type="submit" class="btn btn-default">送信する</button>
+        <form action="/" method="get" class="form-inline">
+          <input type="text" class="form-control" id="keyword" name="keyword" placeholder="keyword">
+          <button type="submit" class="btn btn-default">Search</button>
         </form>
+      </div>
+      <div>
+        {% for r in results %}
+        <div clsass=flash>{{ r|safe }}</div>
+        {% endfor %}
       </div>
     </div>
   </div>

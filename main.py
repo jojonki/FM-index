@@ -1,7 +1,7 @@
 import os
 import argparse
 from fm_index import FMIndex
-from util import save_pickle, load_pickle
+from util import save_pickle, load_pickle, load_files, get_file_name_via_index
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--f', type=str, metavar='PATH', help='text file')
@@ -11,32 +11,6 @@ parser.add_argument('--t', type=str, help='raw text')
 parser.add_argument('--s', type=str, help='search text')
 parser.add_argument('--d', type=str, metavar='PATH', help='dict file')
 args = parser.parse_args()
-
-
-def load_files(f_dir):
-    T = ''
-    db = []
-    for root, dirs, files in os.walk(f_dir):
-        path = root.split(os.sep)
-        for f_name in files:
-            if f_name.endswith('.txt'):
-                f_path = os.sep.join(path + [f_name])
-                with open(f_path, 'r', encoding='utf-8') as f:
-                    T += ''.join(f.readlines()).replace('\r', '').replace('\n', '')
-                    db.append((f_name, len(T)))
-                    if len(T) > 30000:
-                        break
-    print('len(T)', len(T))
-    return T, db
-
-
-def get_file_name_via_index(db, index):
-    target_f_name = None
-    for i, (f_name, ct) in enumerate(db):
-        if index < ct:
-            target_f_name = f_name
-            break
-    return target_f_name
 
 
 pat = args.s
@@ -51,8 +25,6 @@ elif args.f is not None:
         db.append((args.f, len(T)))
 else:
     T = args.t
-
-# print('Input:', T[:10], ', pattern:', pat)
 
 fmi = FMIndex()
 if args.dict and os.path.isfile(args.dict):

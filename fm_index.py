@@ -8,7 +8,7 @@ class FMIndex:
         sa = self.suffix_array(text)
         self.sa = sa # TODO reduce memory footprint
         self.bwt = self.bwt_via_sa(text, sa)
-        return self.bwt, self.sa, 
+        return self.bwt, self.sa
 
     def set_dict(self, data):
         if 'bwt' in data:
