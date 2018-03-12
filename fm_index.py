@@ -4,36 +4,33 @@ class FMIndex:
         self.marker = '$'
 
     def encode(self, text):
-        if text[-1] != self.marker:
-            text += self.marker
-            self.text = text
-
-        # self.encode(self.text)
+        self.text_len = len(text)
         sa = self.suffix_array(text)
         self.sa = sa # TODO reduce memory footprint
-        # print('sa', sa)
         self.bwt = self.bwt_via_sa(text, sa)
-        return self.bwt, self.sa
+        return self.bwt, self.sa, 
 
     def set_dict(self, data):
         if 'bwt' in data:
             self.bwt = data['bwt']
         if 'sa' in data:
             self.sa = data['sa']
+        if 'text_len' in data:
+            self.text_len = data['text_len']
+        if 'ch_count' in data:
+            self.ch_count = data['ch_count']
 
     def decode(self, bwt):
         ranks, ch_count = self.rank_bwt(bwt)
-        # print('ranks', ranks)
-        # print('ch_count', ch_count)
         self.ch_count = ch_count
         first = self.first_col(ch_count)
-        # print('first', first)
         t = self.marker
         row_i = 0
         while bwt[row_i] != self.marker:
             c = bwt[row_i]
             t = c + t
             row_i = first[c][0] + ranks[row_i]
+        assert (len(t) - 1) == self.text_len
 
         if t[-1] == self.marker:
             t = t[:-1]
@@ -41,7 +38,9 @@ class FMIndex:
 
     def suffix_array(self, t):
         sfxes = [t[i:] for i in range(len(t))]
-        return [i[0] for i in sorted(enumerate(sfxes), key=lambda x:x[1])]
+        # The first value [len(t)] is for marker '$'
+        # Force to set '$' to the 0th position
+        return [len(t)] + [i[0] for i in sorted(enumerate(sfxes), key=lambda x:x[1])]
 
     def bwt_via_sa(self, t, sa):
         bwt = []
@@ -64,18 +63,21 @@ class FMIndex:
         return ranks, ch_count
 
     def first_col(self, ch_count):
-        first = {}
-        offset = 0
+        # F must start from '$' marker
+        F = {self.marker: 1}
+        offset = 1
         for c, count in sorted(ch_count.items()):
-            first[c] = (offset, offset + count)
-            offset += count
-        return first
+            if c != self.marker: # Ignore '$' because we already add ther marker to F
+                F[c] = (offset, offset + count)
+                offset += count
+        return F
 
     def rank(self, c, k):
         return self.bwt[:k].count(c)
 
     def rank_lt(self, c):
         # TODO impl better way
+        assert self.ch_count is not None
         F = self.first_col(self.ch_count)
         if c in F:
             return F[c][0]
@@ -84,7 +86,6 @@ class FMIndex:
 
     def search(self, pat):
         assert self.bwt is not None
-        assert self.ch_count is not None
         assert self.sa is not None
 
         # F = self.first_col(self.ch_count)
