@@ -1,23 +1,19 @@
 import argparse
-import sys
 from fm_index import FMIndex
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('pat', metavar='N', type=str, nargs=1,
-                    help='search words')
 parser.add_argument('--f', type=str, metavar='PATH', help='text file')
+parser.add_argument('--t', type=str, help='raw text')
+parser.add_argument('--s', type=str, help='search text')
 parser.add_argument('--d', type=str, metavar='PATH', help='dict file')
 
 args = parser.parse_args()
 T = 'abaaba'
-pat = args.pat[0]
+pat = args.s
 
 if args.f is None:
-    if len(sys.argv) >= 2:
-        T = sys.argv[1]
-    if len(sys.argv) >= 3:
-        pat = sys.argv[2]
+    T = args.t
 else:
     with open(args.f, 'r') as f:
         T = ''.join(f.readlines())
