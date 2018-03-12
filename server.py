@@ -40,7 +40,8 @@ def index():
                 print('{} [{}]: ({}, {})'.format(i, f_name, beg, end))
                 # print('---{}"{}"{}---'.format(dec[beg-rng: beg], dec[beg:end], dec[end:end+rng]))
                 print('---{}"{}"{}---'.format(T[beg-rng: beg], T[beg:end], T[end:end+rng]))
-                results.append('{}<span class="match">{}</span>{}'.format(T[beg-rng: beg], T[beg:end], T[end:end+rng]))
+                v = '{}<span class="match">{}</span>{}'.format(T[beg-rng: beg], T[beg:end], T[end:end+rng])
+                results.append((f_name, v))
                 # print(decoded[m[0]:])
             return render_template('index.html', results=results)
         else:

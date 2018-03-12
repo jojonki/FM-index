@@ -1,22 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
-  <!-- Form
-  ================================================== -->
-<div class="form">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <form action="/" method="get" class="form-inline">
-          <input type="text" class="form-control" id="keyword" name="keyword" placeholder="keyword">
-          <button type="submit" class="btn btn-default">Search</button>
-        </form>
-      </div>
-      <div>
-        {% for r in results %}
-        <div clsass=flash>{{ r|safe }}</div>
-        {% endfor %}
-      </div>
+
+<div class="container">
+  <div class="row">
+    <form action="/" method="get" class="form-inline">
+      <input type="text" class="form-control" id="keyword" name="keyword" placeholder="keyword">
+      <button type="submit" class="btn btn-default">Search</button>
+    </form>
+  </div>
+  {% for r in results %}
+  <div class="row">
+    <div class="col-2">
+      <span class="badge badge-dark">{{ r[0]|safe }}</span>
+    </div>
+    <div class="col">
+      {{ r[1]|safe }}
     </div>
   </div>
+  {% endfor %}
 </div>
 {% endblock %}
