@@ -13,7 +13,13 @@ class FMIndex:
         self.sa = sa # TODO reduce memory footprint
         # print('sa', sa)
         self.bwt = self.bwt_via_sa(text, sa)
-        return self.bwt
+        return self.bwt, self.sa
+
+    def set_dict(self, data):
+        if 'bwt' in data:
+            self.bwt = data['bwt']
+        if 'sa' in data:
+            self.sa = data['sa']
 
     def decode(self, bwt):
         ranks, ch_count = self.rank_bwt(bwt)

@@ -1,10 +1,12 @@
 import os
 import argparse
 from fm_index import FMIndex
+from util import save_pickle, load_pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--f', type=str, metavar='PATH', help='text file')
 parser.add_argument('--dir', type=str, metavar='PATH', help='text dir')
+parser.add_argument('--dict', type=str, metavar='PATH', help='dict file')
 parser.add_argument('--t', type=str, help='raw text')
 parser.add_argument('--s', type=str, help='search text')
 parser.add_argument('--d', type=str, metavar='PATH', help='dict file')
@@ -25,6 +27,7 @@ def load_files(f_dir):
                         break
     print('len(T)', len(T))
     return T, db
+
 
 def get_file_name_via_index(db, index):
     target_f_name = None
@@ -49,9 +52,15 @@ else:
 print('Input:', T[:10], ', pattern:', pat)
 
 fmi = FMIndex()
-print('encode text...')
-bw = fmi.encode(T)
-print('encode done!')
+if args.dict and os.path.isfile(args.dict):
+    saved_data = load_pickle(args.dict)
+    bw = saved_data['bwt']
+    fmi.set_dict(saved_data)
+else:
+    print('encode text...')
+    bw, sa = fmi.encode(T)
+    save_pickle({'bwt': bw, 'sa': sa}, 'bwt.pickle')
+    print('encode done!')
 dec = fmi.decode(bw)
 # print('Decoded:', decoded)
 match = fmi.search(pat)
