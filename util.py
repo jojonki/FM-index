@@ -25,7 +25,7 @@ def load_files(f_dir):
                 with open(f_path, 'r', encoding='utf-8') as f:
                     T += ''.join(f.readlines()).replace('\r', '').replace('\n', '')
                     db.append((f_name, len(T)))
-                    if len(T) > 300000:
+                    if len(T) > 1300000:
                         break
     print('len(T)', len(T))
     return T, db
